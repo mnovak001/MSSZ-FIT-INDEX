@@ -17,6 +17,7 @@ export function MaterialForm({ topics }: MaterialFormProps) {
   const [kind, setKind] = useState<MaterialKind>(MaterialKind.LINK);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (file: File | null) => {
@@ -31,20 +32,32 @@ export function MaterialForm({ topics }: MaterialFormProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsSubmitting(true);
     
     // Small delay to show loading state
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    const formData = new FormData(e.currentTarget);
+    // Use form ref to create FormData
+    const form = formRef.current;
+    if (!form) {
+      console.error('Form element not found');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    const formData = new FormData(form);
     
     // Add selected file if any
     if (selectedFile) {
       formData.set('file', selectedFile);
     }
     
+    console.log('Submitting form data...');
+    
     try {
       await createMaterial(formData);
+      console.log('Material created successfully');
     } catch (error) {
       console.error('Error creating material:', error);
       setIsSubmitting(false);
@@ -52,7 +65,7 @@ export function MaterialForm({ topics }: MaterialFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 grid gap-4" encType="multipart/form-data">
+    <form ref={formRef} onSubmit={handleSubmit} className="mt-4 grid gap-4" encType="multipart/form-data">
       <div>
         <label className="label">Okruh</label>
         <select 
