@@ -56,3 +56,17 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
+
+# Migrations image - includes full node_modules with Prisma CLI
+FROM base AS migrations
+WORKDIR /app
+
+# Copy all dependencies including devDependencies
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Set dummy env vars
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+
+# Run migrations
+CMD ["./node_modules/.bin/prisma", "migrate", "deploy"]

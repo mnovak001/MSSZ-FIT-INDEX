@@ -54,17 +54,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: migrations  # Use the migrations stage which has Prisma CLI
     container_name: fit-szz-migrations
     environment:
       DATABASE_URL: postgresql://${DB_USER:-fit}:${DB_PASSWORD:-fit}@postgres:5432/${DB_NAME:-fit_szz}
-    command: ./node_modules/.bin/prisma migrate deploy
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - app-network
-    volumes:
-      - uploads_data:/app/public/uploads
 
 volumes:
   postgres_data:
