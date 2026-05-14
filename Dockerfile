@@ -35,11 +35,15 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy built application (standalone output)
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# Next.js standalone includes server.js in .next/standalone root
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/ ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy package.json for runtime
+# Copy package.json for runtime (standalone doesn't include it)
 COPY --from=builder /app/package.json ./package.json
+
+# Copy next.config.mjs if needed (standalone may need it)
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 # Copy Prisma schema and generated client for prisma migrate deploy
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
