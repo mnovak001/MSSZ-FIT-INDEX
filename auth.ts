@@ -39,6 +39,8 @@ function clearLoginAttempts(identifier: string): void {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Trust the host - needed for production deployments
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "credentials",
