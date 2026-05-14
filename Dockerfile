@@ -20,6 +20,9 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build-only"
 
+# Generate Prisma Client during build
+RUN npx prisma generate
+
 # Build the application
 RUN npm run build
 
@@ -40,8 +43,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy package.json for runtime
 COPY --from=builder /app/package.json ./package.json
 
-# Copy Prisma schema and migrations for prisma migrate deploy
+# Copy Prisma schema and generated client for prisma migrate deploy
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 
 # Create public folder and uploads directory (public is not in git)
 RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public
