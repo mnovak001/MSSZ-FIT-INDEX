@@ -26,9 +26,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: runner  # Use the runner stage for production
     container_name: fit-szz-nextjs
     restart: unless-stopped
-    command: ["node", "server.js"]
+    command: ["npm", "start"]
     environment:
       # Database connection
       DATABASE_URL: postgresql://${DB_USER:-fit}:${DB_PASSWORD:-fit}@postgres:5432/${DB_NAME:-fit_szz}
