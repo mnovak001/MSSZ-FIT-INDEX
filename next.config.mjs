@@ -8,9 +8,7 @@ const nextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb'
-    },
-    // Allow dynamic env variables at runtime
-    dynamicIO: true
+    }
   },
   
   // Force dynamic rendering for all pages
