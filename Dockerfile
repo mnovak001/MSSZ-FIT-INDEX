@@ -14,14 +14,7 @@ RUN npm ci
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-
-# Copy source files (excluding public first to use cache effectively)
-COPY package.json package-lock.json prisma/ ./
-COPY src/ ./src/ 2>/dev/null || COPY app/ ./app/
-COPY components/ ./components/
-COPY lib/ ./lib/
-COPY public/ ./public/
-COPY *.config.* *.ts .env.example .gitignore ./
+COPY . .
 
 # Set dummy env vars for build (only needed for Prisma schema validation)
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
@@ -37,13 +30,17 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy public folder from builder (it was copied there in COPY step above)
-COPY --from=builder /app/public ./public
+# Copy built application (standalone output)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy public folder from source (not from builder since it's not in .next/standalone)
+COPY --chown=nextjs:nodejs public/ ./public/
+
+# Copy package.json for runtime (optional, useful for debugging)
 COPY --from=builder /app/package.json ./package.json
 
 # Set proper permissions
