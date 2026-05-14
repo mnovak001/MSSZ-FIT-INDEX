@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { createTopic } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminTopicsPage() {
   const user = await checkAdminAuth();
   const topics = await prisma.topic.findMany({ orderBy: { title: 'asc' } });

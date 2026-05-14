@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { mapTopicToSpecialization } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminMappingPage() {
   const user = await checkAdminAuth();
   

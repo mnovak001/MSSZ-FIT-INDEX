@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { createMaterial, deleteMaterial } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminMaterialsPage() {
   const user = await checkAdminAuth();
   

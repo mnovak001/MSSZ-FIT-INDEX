@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { MaterialList } from '@/components/MaterialList';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SpecializationTopicPage({ params }: { params: Promise<{ code: string; position: string }> }) {
   const { code, position: positionStr } = await params;
   const position = Number(positionStr);

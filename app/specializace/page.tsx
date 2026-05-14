@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { EmptyState } from '@/components/EmptyState';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SpecializationsPage() {
   const specializations = await prisma.specialization.findMany({
     orderBy: { code: 'asc' },

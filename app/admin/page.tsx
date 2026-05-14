@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { createExamVersion } from './actions';
 import { checkAdminAuth, handleSignOut } from './auth-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   const user = await checkAdminAuth();
   const versions = await prisma.examVersion.findMany({ orderBy: { createdAt: 'desc' } });

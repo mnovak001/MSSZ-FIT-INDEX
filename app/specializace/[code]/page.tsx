@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { EmptyState } from '@/components/EmptyState';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SpecializationDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const specialization = await prisma.specialization.findUnique({

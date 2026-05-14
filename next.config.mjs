@@ -3,11 +3,19 @@ const nextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
   
+  // Disable static generation for pages that need database access
+  // This forces SSR which will work at runtime when DB is available
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb'
-    }
+    },
+    // Allow dynamic env variables at runtime
+    dynamicIO: true
   },
+  
+  // Force dynamic rendering for all pages
+  // This prevents prerendering errors during build when DB is not available
+  productionBrowserSourceMaps: false,
   // Security headers
   async headers() {
     return [

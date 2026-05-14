@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { createSpecialization } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminSpecializationsPage() {
   const user = await checkAdminAuth();
   const specializations = await prisma.specialization.findMany({ orderBy: { code: 'asc' } });
