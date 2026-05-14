@@ -20,8 +20,8 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build-only"
 
-# Generate Prisma Client during build
-RUN npx prisma generate
+# Generate Prisma Client during build (use local binary to avoid npx fetching wrong version)
+RUN ./node_modules/.bin/prisma generate
 
 # Build the application
 RUN npm run build
