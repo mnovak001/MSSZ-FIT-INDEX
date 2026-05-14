@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TopicScope {
+  COMMON
+  SPECIALIZATION
+}
+
+enum MaterialKind {
+  LINK
+  FILE
+  NOTE
+}
+
+model Specialization {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  topics SpecializationTopic[]
+
+  @@map("specializations")
+}
+
+model ExamVersion {
+  id           String    @id @default(uuid())
+  name         String
+  academicYear String?
+  validFrom    DateTime?
+  validTo      DateTime?
+  isActive     Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  specializationTopics SpecializationTopic[]
+
+  @@map("exam_versions")
+}
+
+model Topic {
+  id          String     @id @default(uuid())
+  title       String     @unique
+  description String?
+  scope       TopicScope @default(SPECIALIZATION)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  materials       Material[]
+  specializations SpecializationTopic[]
+  topicTags       TopicTag[]
+
+  @@index([scope])
+  @@map("topics")
+}
+
+model SpecializationTopic {
+  id                 String   @id @default(uuid())
+  examVersionId      String
+  specializationId   String
+  topicId            String
+  position           Int
+  specializationNote String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  examVersion    ExamVersion    @relation(fields: [examVersionId], references: [id], onDelete: Cascade)
+  specialization Specialization @relation(fields: [specializationId], references: [id], onDelete: Cascade)
+  topic          Topic          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([examVersionId, specializationId, position])
+  @@unique([examVersionId, specializationId, topicId])
+  @@index([topicId])
+  @@map("specialization_topics")
+}
+
+model Material {
+  id          String       @id @default(uuid())
+  topicId     String
+  title       String
+  kind        MaterialKind
+  url         String?
+  storageKey  String?
+  content     String?
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
+  @@index([kind])
+  @@map("materials")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  topicTags TopicTag[]
+
+  @@map("tags")
+}
+
+model TopicTag {
+  topicId String
+  tagId   String
+
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([topicId, tagId])
+  @@map("topic_tags")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  username      String    @unique
+  password      String
+  name          String?
+  role          String    @default("user") // "admin" or "user"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

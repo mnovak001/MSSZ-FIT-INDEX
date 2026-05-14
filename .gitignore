@@ -1,0 +1,56 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# production
+*.tsbuildinfo
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
+
+# uploads / local storage
+uploads/
+storage/
+public/uploads/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# testing
+coverage/
+.playwright/
+test-results/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker / local database
+postgres-data/
+pgdata/
+
+# temporary files
+tmp/
+temp/
+.cache/

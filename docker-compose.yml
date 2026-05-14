@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: fit-szz-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-fit}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-fit}
+      POSTGRES_DB: ${DB_NAME:-fit_szz}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fit} -d ${DB_NAME:-fit_szz}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  # Next.js Application
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fit-szz-nextjs
+    restart: unless-stopped
+    environment:
+      # Database connection
+      DATABASE_URL: postgresql://${DB_USER:-fit}:${DB_PASSWORD:-fit}@postgres:5432/${DB_NAME:-fit_szz}
+      # NextAuth
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      # Admin credentials (CHANGE IN PRODUCTION!)
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      # Environment
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/app/public/uploads
+    networks:
+      - app-network
+    expose:
+      - "3000"
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  app-network:
+    driver: bridge
