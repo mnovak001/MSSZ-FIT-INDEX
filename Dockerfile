@@ -16,6 +16,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Set dummy env vars for build (only needed for Prisma schema validation)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV NEXTAUTH_SECRET="dummy-secret-for-build-only"
+
 # Build the application
 RUN npm run build
 
