@@ -51,7 +51,7 @@ export default async function AdminMaterialsPage() {
                 )}
                 {material.storageKey && (
                   <p className="mt-1">
-                    <a href={material.storageKey} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a href={`/api/materials/${material.id}/download`} className="text-blue-600 hover:underline">
                       Stáhnout soubor
                     </a>
                   </p>

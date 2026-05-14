@@ -21,8 +21,8 @@ export function DeleteButton({ materialId }: { materialId: string }) {
         throw new Error(data.error || 'Chyba při mazání');
       }
       
-      // Use router refresh instead of reload
-      router.refresh();
+      // Full page navigation to trigger server re-render
+      window.location.href = '/admin/materialy';
     } catch (error) {
       console.error('Error deleting material:', error);
       alert(error instanceof Error ? error.message : 'Chyba při mazání');

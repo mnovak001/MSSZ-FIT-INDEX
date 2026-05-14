@@ -68,13 +68,16 @@ export function MaterialForm({ topics }: MaterialFormProps) {
       
       console.log('Material created successfully:', data.material);
       
+      // Show success message
+      alert('Materiál byl úspěšně vytvořen!');
+      
       // Reset form
       form.reset();
       setSelectedFile(null);
       setIsSubmitting(false);
       
-      // Use router refresh instead of reload
-      router.refresh();
+      // Full page navigation to trigger server re-render
+      window.location.href = '/admin/materialy';
       
     } catch (error) {
       console.error('Error creating material:', error);
