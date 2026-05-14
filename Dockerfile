@@ -37,8 +37,11 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy package.json for runtime (optional, useful for debugging)
+# Copy package.json for runtime
 COPY --from=builder /app/package.json ./package.json
+
+# Copy Prisma schema and migrations for prisma migrate deploy
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 # Create public folder and uploads directory (public is not in git)
 RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public
