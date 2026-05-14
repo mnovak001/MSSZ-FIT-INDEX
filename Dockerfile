@@ -21,10 +21,9 @@ ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build-only"
 
 # Generate Prisma Client and build the application
-# This uses the npm script which properly handles prisma generate
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image - use full copy approach (not standalone)
 FROM base AS runner
 WORKDIR /app
 
@@ -34,23 +33,17 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy built application (standalone output)
-# Next.js standalone includes server.js in .next/standalone root
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/ ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy package.json for runtime (standalone doesn't include it)
+# Copy all necessary files for running Next.js
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-
-# Copy next.config.mjs if needed (standalone may need it)
 COPY --from=builder /app/next.config.mjs ./next.config.mjs
-
-# Copy Prisma schema and generated client for prisma migrate deploy
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/app ./app
 
-# Create public folder and uploads directory (public is not in git)
-RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public
+# Create uploads directory
+RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
 
 USER nextjs
 
@@ -59,7 +52,8 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Use next start instead of node server.js
+CMD ["npm", "start"]
 
 # Migrations image - includes full node_modules with Prisma CLI
 FROM base AS migrations
