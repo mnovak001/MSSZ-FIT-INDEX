@@ -1,27 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 /**
  * GET /api/materials/[id]/download
- * Download a material file (admin only)
+ * Download a material file (public access)
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check authentication
-    const session = await auth();
-    
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Neautorizováno' },
-        { status: 401 }
-      );
-    }
+    // Public access - no authentication required for downloads
 
     const { id } = await params;
 
