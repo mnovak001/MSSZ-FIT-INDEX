@@ -9,11 +9,16 @@ export async function handleSignOut() {
 }
 
 export async function checkAdminAuth() {
-  const session = await auth();
-  
-  if (!session || !session.user || session.user.role !== "admin") {
+  try {
+    const session = await auth();
+    
+    if (!session || !session.user || session.user.role !== "admin") {
+      redirect("/api/auth/signin");
+    }
+    
+    return session.user;
+  } catch (error) {
+    console.error('Error in checkAdminAuth:', error);
     redirect("/api/auth/signin");
   }
-  
-  return session.user;
 }

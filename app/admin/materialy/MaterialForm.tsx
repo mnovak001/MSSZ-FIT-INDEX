@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { MaterialKind } from '@prisma/client';
 
 interface Topic {
@@ -13,6 +14,7 @@ interface MaterialFormProps {
 }
 
 export function MaterialForm({ topics }: MaterialFormProps) {
+  const router = useRouter();
   const [kind, setKind] = useState<MaterialKind>(MaterialKind.LINK);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,20 +68,21 @@ export function MaterialForm({ topics }: MaterialFormProps) {
       
       console.log('Material created successfully:', data.material);
       
-      // Show success message
-      alert('Materiál byl úspěšně vytvořen!');
-      
       // Reset form
       form.reset();
       setSelectedFile(null);
+      setIsSubmitting(false);
       
-      // Reload page to show new material
-      window.location.reload();
+      // Use router refresh instead of reload
+      router.refresh();
       
     } catch (error) {
       console.error('Error creating material:', error);
       setIsSubmitting(false);
-      alert(error instanceof Error ? error.message : 'Neznámá chyba');
+      // Don't show alert on server component render error during refresh
+      if (!(error as any)?.digest) {
+        alert(error instanceof Error ? error.message : 'Neznámá chyba');
+      }
     }
   };
 

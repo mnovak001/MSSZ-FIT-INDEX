@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function DeleteButton({ materialId }: { materialId: string }) {
+  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -19,8 +21,8 @@ export function DeleteButton({ materialId }: { materialId: string }) {
         throw new Error(data.error || 'Chyba při mazání');
       }
       
-      // Reload page to show updated list
-      window.location.reload();
+      // Use router refresh instead of reload
+      router.refresh();
     } catch (error) {
       console.error('Error deleting material:', error);
       alert(error instanceof Error ? error.message : 'Chyba při mazání');
