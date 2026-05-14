@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (internal only - not exposed to host)
   postgres:
     image: postgres:16-alpine
     container_name: fit-szz-postgres
@@ -10,8 +10,7 @@ services:
       POSTGRES_USER: ${DB_USER:-fit}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-fit}
       POSTGRES_DB: ${DB_NAME:-fit_szz}
-    ports:
-      - "${DB_PORT:-5432}:5432"
+    # No ports exposed - database is internal only
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

@@ -37,14 +37,11 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy public folder from source (not from builder since it's not in .next/standalone)
-COPY --chown=nextjs:nodejs public/ ./public/
-
 # Copy package.json for runtime (optional, useful for debugging)
 COPY --from=builder /app/package.json ./package.json
 
-# Set proper permissions
-RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public/uploads
+# Create public folder and uploads directory (public is not in git)
+RUN mkdir -p /app/public/uploads && chown -R nextjs:nodejs /app/public
 
 USER nextjs
 
