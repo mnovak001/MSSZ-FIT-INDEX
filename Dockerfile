@@ -20,10 +20,8 @@ COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ENV NEXTAUTH_SECRET="dummy-secret-for-build-only"
 
-# Generate Prisma Client during build (use local binary to avoid npx fetching wrong version)
-RUN ./node_modules/.bin/prisma generate
-
-# Build the application
+# Generate Prisma Client and build the application
+# This uses the npm script which properly handles prisma generate
 RUN npm run build
 
 # Production image, copy all the files and run next
