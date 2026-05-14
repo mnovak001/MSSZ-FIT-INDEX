@@ -1,8 +1,8 @@
-import { MaterialKind } from '@prisma/client';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { createMaterial, deleteMaterial } from '../actions';
+import { deleteMaterial } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
+import { MaterialForm } from './MaterialForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,16 +32,7 @@ export default async function AdminMaterialsPage() {
       </div>
       <section className="card">
         <h2 className="text-xl font-semibold">Nový materiál</h2>
-        <form action={createMaterial} className="mt-4 grid gap-4" encType="multipart/form-data">
-          <div><label className="label">Okruh</label><select className="input" name="topicId" required>{topics.map((topic) => <option key={topic.id} value={topic.id}>{topic.title}</option>)}</select></div>
-          <div><label className="label">Název</label><input className="input" name="title" required /></div>
-          <div><label className="label">Typ</label><select className="input" name="kind" defaultValue={MaterialKind.LINK}><option value={MaterialKind.LINK}>Odkaz</option><option value={MaterialKind.FILE}>Soubor</option><option value={MaterialKind.NOTE}>Poznámka</option></select></div>
-          <div><label className="label">URL pro odkaz</label><input className="input" name="url" placeholder="https://..." /></div>
-          <div><label className="label">Soubor pro upload</label><input className="input" name="file" type="file" /></div>
-          <div><label className="label">Obsah poznámky</label><textarea className="input min-h-32" name="content" /></div>
-          <div><label className="label">Popis</label><textarea className="input min-h-20" name="description" /></div>
-          <button className="btn w-fit" type="submit">Přidat materiál</button>
-        </form>
+        <MaterialForm topics={topics} />
       </section>
       <section className="card">
         <h2 className="mb-4 text-xl font-semibold">Existující materiály</h2>
