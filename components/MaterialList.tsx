@@ -8,6 +8,8 @@ type Material = {
   storageKey: string | null;
   content: string | null;
   description: string | null;
+  topicId?: string; // Not used but part of Prisma model
+  createdAt?: Date; // Not used but part of Prisma model
 };
 
 export function MaterialList({ materials }: { materials: Material[] }) {
@@ -30,7 +32,7 @@ export function MaterialList({ materials }: { materials: Material[] }) {
             <a className="mt-3 inline-block text-sm" href={material.url} target="_blank" rel="noreferrer">Otevřít odkaz</a>
           ) : null}
           {material.kind === 'FILE' && material.storageKey ? (
-            <a className="mt-3 inline-block text-sm" href={material.storageKey} target="_blank" rel="noreferrer">Stáhnout soubor</a>
+            <a className="mt-3 inline-block text-sm" href={`/api/materials/${material.id}/download`} target="_blank" rel="noreferrer">Stáhnout soubor</a>
           ) : null}
           {material.kind === 'NOTE' && material.content ? (
             <div className="mt-3 whitespace-pre-wrap rounded-xl bg-slate-50 p-3 text-sm text-slate-800">{material.content}</div>

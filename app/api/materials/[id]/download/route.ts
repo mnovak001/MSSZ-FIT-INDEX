@@ -81,11 +81,16 @@ export async function GET(
 
     const contentType = contentTypes[extension] || 'application/octet-stream';
 
-    // Return file with proper headers
+    // For PDF files, allow inline display (preview)
+    // For other files, force download
+    const disposition = extension === '.pdf' 
+      ? `inline; filename="${fileName}"`
+      : `attachment; filename="${fileName}"`;
+
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${fileName}"`,
+        'Content-Disposition': disposition,
         'Cache-Control': 'no-store, no-cache, must-revalidate'
       }
     });
