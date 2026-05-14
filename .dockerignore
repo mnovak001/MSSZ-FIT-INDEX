@@ -22,10 +22,10 @@ build
 
 # Git
 .git
-.gitignore
 
 # Documentation
-*.md
+README.md
+DEPLOYMENT.md
 SECURITY.md
 
 # Test
@@ -37,14 +37,10 @@ __tests__
 test
 tests
 
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
-
 # Misc
 .DS_Store
 Thumbs.db
 *.log
 tmp
 temp
+ssl/
