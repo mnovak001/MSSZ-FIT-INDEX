@@ -28,6 +28,7 @@ services:
       dockerfile: Dockerfile
     container_name: fit-szz-nextjs
     restart: unless-stopped
+    command: ["node", "server.js"]
     environment:
       # Database connection
       DATABASE_URL: postgresql://${DB_USER:-fit}:${DB_PASSWORD:-fit}@postgres:5432/${DB_NAME:-fit_szz}
@@ -56,8 +57,10 @@ services:
       dockerfile: Dockerfile
       target: migrations  # Use the migrations stage which has Prisma CLI
     container_name: fit-szz-migrations
+    restart: "no"  # Don't restart after migrations complete
     environment:
       DATABASE_URL: postgresql://${DB_USER:-fit}:${DB_PASSWORD:-fit}@postgres:5432/${DB_NAME:-fit_szz}
+    command: ["./node_modules/.bin/prisma", "migrate", "deploy"]
     depends_on:
       postgres:
         condition: service_healthy
