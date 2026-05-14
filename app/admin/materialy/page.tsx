@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { deleteMaterial } from '../actions';
 import { checkAdminAuth, handleSignOut } from '../auth-actions';
 import { MaterialForm } from './MaterialForm';
+import { DeleteButton } from './DeleteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,10 +60,7 @@ export default async function AdminMaterialsPage() {
                   <p className="mt-2 p-3 bg-slate-50 rounded border border-slate-200 whitespace-pre-wrap">{material.content}</p>
                 )}
               </div>
-              <form action={deleteMaterial}>
-                <input type="hidden" name="id" value={material.id} />
-                <button type="submit" className="btn btn-secondary text-sm text-red-600 hover:text-red-700">Smazat</button>
-              </form>
+              <DeleteButton materialId={material.id} />
             </div>
           ))}
         </div>

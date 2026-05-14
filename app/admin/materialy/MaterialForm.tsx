@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { MaterialKind } from '@prisma/client';
-import { createMaterial } from '@/app/admin/actions';
 
 interface Topic {
   id: string;
@@ -35,14 +34,12 @@ export function MaterialForm({ topics }: MaterialFormProps) {
     e.stopPropagation();
     setIsSubmitting(true);
     
-    // Small delay to show loading state
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
     // Use form ref to create FormData
     const form = formRef.current;
     if (!form) {
       console.error('Form element not found');
       setIsSubmitting(false);
+      alert('Chyba: nelze získat formulář');
       return;
     }
     
@@ -53,14 +50,36 @@ export function MaterialForm({ topics }: MaterialFormProps) {
       formData.set('file', selectedFile);
     }
     
-    console.log('Submitting form data...');
+    console.log('Submitting material via API...');
     
     try {
-      await createMaterial(formData);
-      console.log('Material created successfully');
+      const response = await fetch('/api/materials', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Chyba při ukládání');
+      }
+      
+      console.log('Material created successfully:', data.material);
+      
+      // Show success message
+      alert('Materiál byl úspěšně vytvořen!');
+      
+      // Reset form
+      form.reset();
+      setSelectedFile(null);
+      
+      // Reload page to show new material
+      window.location.reload();
+      
     } catch (error) {
       console.error('Error creating material:', error);
       setIsSubmitting(false);
+      alert(error instanceof Error ? error.message : 'Neznámá chyba');
     }
   };
 
